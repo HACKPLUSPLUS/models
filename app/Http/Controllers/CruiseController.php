@@ -6,6 +6,7 @@ use App\Cruise;
 use App\Price;
 use App\Broker;
 use App\CabinCode;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
@@ -19,6 +20,31 @@ class CruiseController extends Controller
      */
     public function show($id)
     {
+        $brokerId = 2;
+        $shipId = 192;
+        $portId = 13;
+        $destinationId = 9;
+        $duration = 7;
+        $navigationalRoute = '13,9,157,461,125,105,2,13';
+        $now = \Carbon\Carbon::now();
+        
+        $routeDates = DB::table('cruises')
+                ->where([['broker_id', '=', $brokerId], ['ship_id', '=', $shipId], ['haven_id', '=', $portId], ['bestemming_id', '=', $destinationId], ['duur', '=', $duration], ['vaarroute', '=', $navigationalRoute], ['begindatum', '>', $now], ['published', '=', 'Y']])
+                ->orderBy('begindatum', 'asc')
+                ->get();
+        
+        /*SELECT id, begindatum FROM cruises
+            WHERE `cruises`.`broker_id`=:brokerId
+            AND `cruises`.`ship_id`=:shipId
+            AND `cruises`.`port_id`=:portId
+            AND `cruises`.`bestemming_id`=:destinationId
+            AND `cruises`.`duration`=:duration
+            AND `cruises`.`vaarroute`=:navigationalRoute
+            AND `cruises`.`begindatum`>NOW()
+            AND `cruises`.`published`='Y'
+            ORDER BY `begindatum` ASC*/
+        var_dump($routeDates);
+        die;
         $prices = DB::table('prices')
                 ->join('cabin_codes', 'cabin_codes.id', '=', 'prices.hut_id')
                 ->select(
